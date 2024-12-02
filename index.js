@@ -59,6 +59,33 @@ async function run() {
       res.send(result);
     });
 
+    //Find
+    app.get("/user/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await userCollection.findOne(query);
+      res.send(result);
+    });
+
+    //UPDATE
+    app.put("/user/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updateUser = req.body;
+      const updated = {
+        $set: {
+          name: updateUser.name,
+          email: updateUser.email,
+          photo: updateUser.photo,
+          gender: updateUser.gender,
+          status: updateUser.status,
+        },
+      };
+      const result = await userCollection.updateOne(filter, updated, options);
+      res.send(result);
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
