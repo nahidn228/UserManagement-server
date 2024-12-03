@@ -31,9 +31,12 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    //await client.connect();
 
     const userCollection = client.db("userManagementDB").collection("users");
+    const authUserCollection = client
+      .db("userManagementDB")
+      .collection("authUser");
 
     //CREATE
     app.post("/user", async (req, res) => {
@@ -83,6 +86,25 @@ async function run() {
         },
       };
       const result = await userCollection.updateOne(filter, updated, options);
+      res.send(result);
+    });
+
+    //authUser from firebase
+
+    //CREATE
+    app.post("/authUser", async (req, res) => {
+      const newAuthUser = req.body;
+      console.log(newAuthUser);
+      const result = await authUserCollection.insertOne(newAuthUser);
+      res.send(newAuthUser);
+    });
+
+    //READ
+    app.get("/authUser", async (req, res) => {
+      const newAuthUser = req.body;
+      console.log(newAuthUser);
+      const cursor = authUserCollection.find();
+      const result = await cursor.toArray();
       res.send(result);
     });
 
